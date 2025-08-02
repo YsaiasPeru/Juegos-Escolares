@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Jugador - Administración{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="fas fa-user-plus me-2"></i>Registrar Nuevo Jugador
+                </h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dni" class="form-label">
+                                <i class="fas fa-id-card me-2"></i>DNI *
+                            </label>
+                            <input type="text" class="form-control" id="dni" name="dni" required 
+                                   placeholder="Ej: 12345678">
+                            <div class="form-text">Número de documento único del jugador</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="numero_telefono" class="form-label">
+                                <i class="fas fa-phone me-2"></i>Número de Teléfono
+                            </label>
+                            <input type="tel" class="form-control" id="numero_telefono" name="numero_telefono" 
+                                   placeholder="Ej: 999888777">
+                            <div class="form-text">Teléfono de contacto del jugador</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="nombre" class="form-label">
+                                <i class="fas fa-user me-2"></i>Nombre *
+                            </label>
+                            <input type="text" class="form-control" id="nombre" name="nombre" required 
+                                   placeholder="Ej: Juan">
+                            <div class="form-text">Nombre del jugador</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="apellido" class="form-label">
+                                <i class="fas fa-user me-2"></i>Apellido *
+                            </label>
+                            <input type="text" class="form-control" id="apellido" name="apellido" required 
+                                   placeholder="Ej: Pérez">
+                            <div class="form-text">Apellido del jugador</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="posicion" class="form-label">
+                                <i class="fas fa-futbol me-2"></i>Posición
+                            </label>
+                            <select class="form-select" id="posicion" name="posicion">
+                                <option value="">Seleccionar posición</option>
+                                <option value="Portero">Portero</option>
+                                <option value="Defensa">Defensa</option>
+                                <option value="Mediocampista">Mediocampista</option>
+                                <option value="Delantero">Delantero</option>
+                                <option value="Capitán">Capitán</option>
+                            </select>
+                            <div class="form-text">Posición principal del jugador</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="equipo_id" class="form-label">
+                                <i class="fas fa-shield-alt me-2"></i>Equipo
+                            </label>
+                            <select class="form-select" id="equipo_id" name="equipo_id">
+                                <option value="">Sin equipo asignado</option>
+                                {% for equipo in equipos %}
+                                <option value="{{ equipo.id }}">{{ equipo.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text">Equipo al que pertenece el jugador</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="es_lider" name="es_lider">
+                            <label class="form-check-label" for="es_lider">
+                                <i class="fas fa-crown me-2"></i>¿Es líder del equipo?
+                            </label>
+                        </div>
+                        <div class="form-text">Marcar si este jugador es el líder/capitán del equipo</div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Información:</strong> 
+                        <ul class="mb-0 mt-2">
+                            <li>El DNI debe ser único para cada jugador</li>
+                            <li>El número de teléfono es importante para el líder del equipo</li>
+                            <li>Puedes asignar el equipo después de crear el jugador</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('admin_jugadores') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Registrar Jugador
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Help Card -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-header bg-light">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-question-circle me-2"></i>Información Importante
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                            <i class="fas fa-crown text-warning"></i>
+                        </div>
+                        <h6>Líder del Equipo</h6>
+                        <small class="text-muted">Solo un jugador por equipo puede ser líder</small>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                            <i class="fas fa-phone text-info"></i>
+                        </div>
+                        <h6>Contacto</h6>
+                        <small class="text-muted">El líder debe tener número de teléfono</small>
+                    </div>
+                    <div class="col-md-4 text-center mb-3">
+                        <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 50px; height: 50px;">
+                            <i class="fas fa-id-card text-success"></i>
+                        </div>
+                        <h6>DNI Único</h6>
+                        <small class="text-muted">Cada jugador debe tener un DNI diferente</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

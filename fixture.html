@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}Fixture - Juegos Escolares{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-calendar-alt me-2"></i>Fixture del Torneo
+            </h2>
+            <div>
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Imprimir Fixture
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <label for="faseFilter" class="form-label">Filtrar por Fase:</label>
+                        <select class="form-select" id="faseFilter">
+                            <option value="">Todas las fases</option>
+                            <option value="grupos">Grupos</option>
+                            <option value="octavos">Octavos de Final</option>
+                            <option value="cuartos">Cuartos de Final</option>
+                            <option value="semifinal">Semifinal</option>
+                            <option value="final">Final</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="estadoFilter" class="form-label">Filtrar por Estado:</label>
+                        <select class="form-select" id="estadoFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="programado">Programado</option>
+                            <option value="en_curso">En Curso</option>
+                            <option value="finalizado">Finalizado</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <label for="equipoFilter" class="form-label">Buscar Equipo:</label>
+                        <input type="text" class="form-control" id="equipoFilter" placeholder="Nombre del equipo">
+                    </div>
+                    <div class="col-md-3 mb-2 d-flex align-items-end">
+                        <button class="btn btn-primary w-100" onclick="aplicarFiltros()">
+                            <i class="fas fa-filter me-2"></i>Aplicar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-calendar fa-2x text-primary"></i>
+                </div>
+                <h4>{{ partidos|length }}</h4>
+                <p class="text-muted mb-0">Total Partidos</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-clock fa-2x text-warning"></i>
+                </div>
+                <h4>{{ partidos|selectattr('estado', 'equalto', 'programado')|list|length }}</h4>
+                <p class="text-muted mb-0">Programados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-check fa-2x text-success"></i>
+                </div>
+                <h4>{{ partidos|selectattr('estado', 'equalto', 'finalizado')|list|length }}</h4>
+                <p class="text-muted mb-0">Finalizados</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-trophy fa-2x text-info"></i>
+                </div>
+                <h4>{{ partidos|selectattr('fase', 'equalto', 'final')|list|length }}</h4>
+                <p class="text-muted mb-0">Finales</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Partidos -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list me-2"></i>Lista de Partidos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if partidos %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="partidosTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha y Hora</th>
+                                    <th>Fase</th>
+                                    <th>Equipo Local</th>
+                                    <th>Resultado</th>
+                                    <th>Equipo Visitante</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for partido in partidos %}
+                                <tr class="partido-row" 
+                                    data-fase="{{ partido.fase }}" 
+                                    data-estado="{{ partido.estado }}"
+                                    data-equipo-local="{{ partido.equipo_local.nombre }}"
+                                    data-equipo-visitante="{{ partido.equipo_visitante.nombre }}">
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <strong>{{ partido.fecha_partido.strftime('%d/%m/%Y') }}</strong>
+                                            <small class="text-muted">{{ partido.fecha_partido.strftime('%H:%M') }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ partido.fase|title }}</span>
+                                        {% if partido.grupo %}
+                                            <small class="text-muted d-block">Grupo {{ partido.grupo }}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                <i class="fas fa-shield-alt text-primary"></i>
+                                            </div>
+                                            <strong>{{ partido.equipo_local.nombre }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if partido.estado == 'finalizado' %}
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="badge bg-success fs-6">{{ partido.goles_local }}</span>
+                                                <span class="mx-2 text-muted">-</span>
+                                                <span class="badge bg-success fs-6">{{ partido.goles_visitante }}</span>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">vs</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                <i class="fas fa-shield-alt text-secondary"></i>
+                                            </div>
+                                            <strong>{{ partido.equipo_visitante.nombre }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if partido.estado == 'programado' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Programado
+                                            </span>
+                                        {% elif partido.estado == 'en_curso' %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-play me-1"></i>En Curso
+                                            </span>
+                                        {% elif partido.estado == 'finalizado' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Finalizado
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="verDetallePartido({{ partido.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar fa-4x text-muted mb-4"></i>
+                        <h4 class="text-muted">No hay partidos programados</h4>
+                        <p class="text-muted">El fixture aún no ha sido creado</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Próximos Partidos Destacados -->
+{% set proximos = partidos|selectattr('estado', 'equalto', 'programado')|list %}
+{% if proximos %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-warning text-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-star me-2"></i>Próximos Partidos Destacados
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for partido in proximos[:6] %}
+                    <div class="col-md-6 col-lg-4 mb-3">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <div class="mb-2">
+                                    <span class="badge bg-warning">{{ partido.fase|title }}</span>
+                                </div>
+                                <h6 class="card-title">{{ partido.equipo_local.nombre }}</h6>
+                                <p class="text-muted mb-1">vs</p>
+                                <h6 class="card-title">{{ partido.equipo_visitante.nombre }}</h6>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>{{ partido.fecha_partido.strftime('%d/%m/%Y') }}
+                                    </small>
+                                    <br>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ partido.fecha_partido.strftime('%H:%M') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function aplicarFiltros() {
+    const faseFilter = document.getElementById('faseFilter').value;
+    const estadoFilter = document.getElementById('estadoFilter').value;
+    const equipoFilter = document.getElementById('equipoFilter').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('.partido-row');
+    
+    rows.forEach(row => {
+        const fase = row.getAttribute('data-fase');
+        const estado = row.getAttribute('data-estado');
+        const equipoLocal = row.getAttribute('data-equipo-local').toLowerCase();
+        const equipoVisitante = row.getAttribute('data-equipo-visitante').toLowerCase();
+        
+        let show = true;
+        
+        if (faseFilter && fase !== faseFilter) show = false;
+        if (estadoFilter && estado !== estadoFilter) show = false;
+        if (equipoFilter && !equipoLocal.includes(equipoFilter) && !equipoVisitante.includes(equipoFilter)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function verDetallePartido(partidoId) {
+    // Aquí se podría abrir un modal con detalles del partido
+    alert('Detalles del partido ' + partidoId);
+}
+</script>
+{% endblock %} 

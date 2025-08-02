@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Juegos Escolares{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Hero Section -->
+    <div class="col-12">
+        <div class="bg-primary text-white p-5 rounded-3 mb-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="display-4 fw-bold">
+                        <i class="fas fa-futbol me-3"></i>Juegos Escolares 2025
+                    </h1>
+                    <p class="lead">Sistema de gestión de torneos escolares con equipos, jugadores y fixture automático</p>
+                    <div class="mt-4">
+                        <a href="{{ url_for('equipos_publico') }}" class="btn btn-light btn-lg me-3">
+                            <i class="fas fa-users me-2"></i>Ver Equipos
+                        </a>
+                        <a href="{{ url_for('fixture') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-calendar-alt me-2"></i>Ver Fixture
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4 text-center">
+                    <i class="fas fa-trophy" style="font-size: 8rem; opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+                <h3 class="card-title">{{ equipos|length }}</h3>
+                <p class="card-text text-muted">Equipos Registrados</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-futbol fa-2x text-success"></i>
+                </div>
+                <h3 class="card-title">{{ proximos_partidos|length }}</h3>
+                <p class="card-text text-muted">Próximos Partidos</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                    <i class="fas fa-trophy fa-2x text-warning"></i>
+                </div>
+                <h3 class="card-title">14</h3>
+                <p class="card-text text-muted">Equipos Objetivo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipos Section -->
+    <div class="col-md-8 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>Equipos Registrados
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if equipos %}
+                    <div class="row">
+                        {% for equipo in equipos %}
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center p-3 border rounded">
+                                <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <i class="fas fa-shield-alt text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ equipo.nombre }}</h6>
+                                    <small class="text-muted">
+                                        <i class="fas fa-users me-1"></i>{{ equipo.jugadores|length }} jugadores
+                                    </small>
+                                </div>
+                                <a href="{{ url_for('ver_equipo_publico', equipo_id=equipo.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No hay equipos registrados aún</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Próximos Partidos -->
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>Próximos Partidos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if proximos_partidos %}
+                    {% for partido in proximos_partidos %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ partido.fecha_partido.strftime('%d/%m %H:%M') }}
+                            </small>
+                            <span class="badge bg-primary">{{ partido.fase }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ partido.equipo_local.nombre }}</span>
+                            <span class="text-muted">vs</span>
+                            <span class="fw-bold">{{ partido.equipo_visitante.nombre }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">No hay partidos programados</p>
+                    </div>
+                {% endif %}
+                
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('fixture') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-alt me-1"></i>Ver Fixture Completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mt-5">
+    <div class="col-12">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-star me-2"></i>Características del Sistema
+        </h3>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-user-cog fa-3x text-primary mb-3"></i>
+                <h5>Gestión de Equipos</h5>
+                <p class="text-muted">Registra equipos con líderes y números telefónicos. Gestiona hasta 14 equipos participantes.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-id-card fa-3x text-success mb-3"></i>
+                <h5>Registro de Jugadores</h5>
+                <p class="text-muted">Registra jugadores con DNI único y asigna posiciones. Control total de la plantilla.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                <h5>Fixture Automático</h5>
+                <p class="text-muted">Genera automáticamente el fixture con eliminación directa hasta llegar a la final.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

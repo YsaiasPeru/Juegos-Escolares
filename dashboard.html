@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Administración{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard Administrativo
+            </h2>
+            <div>
+                <a href="{{ url_for('crear_fixture') }}" class="btn btn-success">
+                    <i class="fas fa-magic me-2"></i>Crear Fixture Automático
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+                <h3 class="card-title">{{ equipos|length }}</h3>
+                <p class="card-text text-muted">Equipos</p>
+                <a href="{{ url_for('admin_equipos') }}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-eye me-1"></i>Ver
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-user fa-2x text-success"></i>
+                </div>
+                <h3 class="card-title">{{ jugadores|length }}</h3>
+                <p class="card-text text-muted">Jugadores</p>
+                <a href="{{ url_for('admin_jugadores') }}" class="btn btn-sm btn-outline-success">
+                    <i class="fas fa-eye me-1"></i>Ver
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-futbol fa-2x text-warning"></i>
+                </div>
+                <h3 class="card-title">{{ partidos|length }}</h3>
+                <p class="card-text text-muted">Partidos</p>
+                <a href="{{ url_for('admin_partidos') }}" class="btn btn-sm btn-outline-warning">
+                    <i class="fas fa-eye me-1"></i>Ver
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-trophy fa-2x text-info"></i>
+                </div>
+                <h3 class="card-title">14</h3>
+                <p class="card-text text-muted">Objetivo</p>
+                <span class="badge bg-info">Meta</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('nuevo_equipo') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>Nuevo Equipo
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('nuevo_jugador') }}" class="btn btn-success w-100">
+                            <i class="fas fa-user-plus me-2"></i>Nuevo Jugador
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('nuevo_partido') }}" class="btn btn-warning w-100">
+                            <i class="fas fa-calendar-plus me-2"></i>Nuevo Partido
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('crear_fixture') }}" class="btn btn-info w-100">
+                            <i class="fas fa-magic me-2"></i>Crear Fixture
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-users me-2"></i>Equipos Recientes
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if equipos %}
+                    {% for equipo in equipos[-5:] %}
+                    <div class="d-flex align-items-center p-2 border-bottom">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ equipo.nombre }}</h6>
+                            <small class="text-muted">
+                                <i class="fas fa-users me-1"></i>{{ equipo.jugadores|length }} jugadores
+                            </small>
+                        </div>
+                        <a href="{{ url_for('ver_equipo', equipo_id=equipo.id) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">No hay equipos registrados</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-futbol me-2"></i>Próximos Partidos
+                </h5>
+            </div>
+            <div class="card-body">
+                {% set proximos = partidos|selectattr('estado', 'equalto', 'programado')|list %}
+                {% if proximos %}
+                    {% for partido in proximos[:5] %}
+                    <div class="border-bottom pb-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ partido.fecha_partido.strftime('%d/%m %H:%M') }}
+                            </small>
+                            <span class="badge bg-primary">{{ partido.fase }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ partido.equipo_local.nombre }}</span>
+                            <span class="text-muted">vs</span>
+                            <span class="fw-bold">{{ partido.equipo_visitante.nombre }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">No hay partidos programados</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress towards goal -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Progreso hacia el Objetivo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="progress mb-2" style="height: 25px;">
+                            {% set progress = (equipos|length / 14) * 100 %}
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%">
+                                {{ equipos|length }}/14 Equipos
+                            </div>
+                        </div>
+                        <small class="text-muted">
+                            {% if equipos|length < 14 %}
+                                Faltan {{ 14 - equipos|length }} equipos para completar el torneo
+                            {% else %}
+                                ¡Objetivo completado! Todos los equipos están registrados
+                            {% endif %}
+                        </small>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h3 class="text-success">{{ "%.1f"|format(progress) }}%</h3>
+                        <small class="text-muted">Completado</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

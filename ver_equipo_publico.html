@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}{{ equipo.nombre }} - Juegos Escolares{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('equipos_publico') }}">Equipos</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ equipo.nombre }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="card-title mb-0">
+                            <i class="fas fa-shield-alt me-2"></i>{{ equipo.nombre }}
+                        </h3>
+                        <p class="mb-0 mt-2">Equipo #{{ equipo.id }} - Registrado el {{ equipo.fecha_registro.strftime('%d/%m/%Y') }}</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        {% if equipo.color_uniforme %}
+                            <div class="d-flex align-items-center justify-content-md-end">
+                                <span class="me-2">Color:</span>
+                                <div class="rounded" style="width: 30px; height: 30px; background-color: {{ equipo.color_uniforme }};"></div>
+                                <span class="ms-2">{{ equipo.color_uniforme }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-users me-2"></i>Información del Equipo</h5>
+                        <ul class="list-unstyled">
+                            <li><strong>ID:</strong> {{ equipo.id }}</li>
+                            <li><strong>Nombre:</strong> {{ equipo.nombre }}</li>
+                            <li><strong>Jugadores:</strong> {{ equipo.jugadores|length }}</li>
+                            <li><strong>Fecha de Registro:</strong> {{ equipo.fecha_registro.strftime('%d/%m/%Y a las %H:%M') }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-crown me-2"></i>Líder del Equipo</h5>
+                        {% set lider = equipo.jugadores|selectattr('es_lider', 'equalto', true)|first %}
+                        {% if lider %}
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-crown text-warning fa-2x me-3"></i>
+                                        <div>
+                                            <h6 class="mb-1">{{ lider.nombre }} {{ lider.apellido }}</h6>
+                                            <p class="mb-1"><strong>DNI:</strong> {{ lider.dni }}</p>
+                                            {% if lider.numero_telefono %}
+                                                <p class="mb-1">
+                                                    <i class="fas fa-phone me-1"></i>
+                                                    <a href="tel:{{ lider.numero_telefono }}">{{ lider.numero_telefono }}</a>
+                                                </p>
+                                            {% endif %}
+                                            {% if lider.posicion %}
+                                                <span class="badge bg-info">{{ lider.posicion }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Este equipo aún no tiene un líder asignado
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Jugadores del Equipo -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-user me-2"></i>Jugadores del Equipo ({{ equipo.jugadores|length }})
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if equipo.jugadores %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>DNI</th>
+                                    <th>Nombre</th>
+                                    <th>Apellido</th>
+                                    <th>Teléfono</th>
+                                    <th>Posición</th>
+                                    <th>Rol</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for jugador in equipo.jugadores %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ jugador.dni }}</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                <i class="fas fa-user text-success"></i>
+                                            </div>
+                                            <strong>{{ jugador.nombre }}</strong>
+                                        </div>
+                                    </td>
+                                    <td>{{ jugador.apellido }}</td>
+                                    <td>
+                                        {% if jugador.numero_telefono %}
+                                            <a href="tel:{{ jugador.numero_telefono }}" class="text-decoration-none">
+                                                <i class="fas fa-phone me-1"></i>{{ jugador.numero_telefono }}
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">No especificado</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if jugador.posicion %}
+                                            <span class="badge bg-info">{{ jugador.posicion }}</span>
+                                        {% else %}
+                                            <span class="text-muted">No especificada</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if jugador.es_lider %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-crown me-1"></i>Líder
+                                            </span>
+                                        {% else %}
+                                            <span class="text-muted">Jugador</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h4 class="text-muted">No hay jugadores registrados</h4>
+                        <p class="text-muted">Este equipo aún no tiene jugadores asignados</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Estadísticas del Equipo -->
+<div class="row mt-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+                <h4>{{ equipo.jugadores|length }}</h4>
+                <p class="text-muted mb-0">Total Jugadores</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-crown fa-2x text-warning"></i>
+                </div>
+                <h4>{{ equipo.jugadores|selectattr('es_lider', 'equalto', true)|list|length }}</h4>
+                <p class="text-muted mb-0">Líderes</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-phone fa-2x text-info"></i>
+                </div>
+                <h4>{{ equipo.jugadores|selectattr('numero_telefono')|list|length }}</h4>
+                <p class="text-muted mb-0">Con Teléfono</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                    <i class="fas fa-futbol fa-2x text-success"></i>
+                </div>
+                <h4>{{ equipo.jugadores|selectattr('posicion')|list|length }}</h4>
+                <p class="text-muted mb-0">Con Posición</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('equipos_publico') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a Equipos
+            </a>
+            <div>
+                <a href="{{ url_for('fixture') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-calendar-alt me-2"></i>Ver Fixture
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
