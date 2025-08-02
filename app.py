@@ -296,7 +296,6 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         
-        # Crear admin por defecto si no existe
         if not Admin.query.filter_by(username='admin').first():
             admin = Admin(
                 username='admin',
@@ -307,4 +306,4 @@ if __name__ == '__main__':
             db.session.commit()
             print("Admin creado - Usuario: admin, Contraseña: admin123")
     
-    app.run(debug=True) 
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
